@@ -28,8 +28,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     controller.HandleInput(running, snake);
     if(snake.isSnakeActive)
       Update();
-    if(_food.HasFoodExpired())
-      PlaceFood();
+
     // renderer.Render(snake, food);
 
     renderer.Render(snake, _food);
@@ -88,6 +87,12 @@ void Game::Update() {
   if (!snake.alive) return;
 
   snake.Update();
+
+  if(_food.HasFoodExpired() && snake.isSnakeActive)
+  {
+    PlaceFood();
+    return;
+  }  
 
   int new_x = static_cast<int>(snake.head_x);
   int new_y = static_cast<int>(snake.head_y);

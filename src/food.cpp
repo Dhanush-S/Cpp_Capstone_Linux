@@ -8,7 +8,7 @@ Food::Food(int gridWidth, int gridHeight ) : _foodType(FoodType::GOOD),
                                              random_w(0, static_cast<int>(gridWidth - 1)),
                                              random_h(0, static_cast<int>(gridHeight - 1)),
                                              random_foodType(0,3),
-                                             random_duration(0,5)
+                                             random_duration(5,10)
                                              {
     _foodLocation.x = random_w(engine);
     _foodLocation.y = random_h(engine);
