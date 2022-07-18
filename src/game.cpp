@@ -1,10 +1,12 @@
 #include "game.h"
 #include <iostream>
-#include "SDL.h"
+// #include "SDL.h"
+#include "SDL2/SDL.h"
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
       engine(dev()),
+      _food(grid_width,grid_height),
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
   PlaceFood();
@@ -24,8 +26,14 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
-    Update();
-    renderer.Render(snake, food);
+    if(snake.isSnakeActive)
+      Update();
+    if(_food.HasFoodExpired())
+      PlaceFood();
+    // renderer.Render(snake, food);
+
+    renderer.Render(snake, _food);
+    _food.FoodPlaced();
 
     frame_end = SDL_GetTicks();
 
@@ -52,16 +60,27 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
 void Game::PlaceFood() {
   int x, y;
+  _food.GenerateNewFood();
   while (true) {
-    x = random_w(engine);
-    y = random_h(engine);
+    x = _food.GetFoodLocation().x;
+    y = _food.GetFoodLocation().y;
+
+    // x = random_w(engine);
+    // y = random_h(engine);
+    
     // Check that the location is not occupied by a snake item before placing
     // food.
-    if (!snake.SnakeCell(x, y)) {
-      food.x = x;
-      food.y = y;
+    // if (!snake.SnakeCell(x, y)) {
+    //   // food.x = x;
+    //   // food.y = y;
+
+    //   return;
+    // }
+
+    if(snake.SnakeCell(x,y))
+      _food.GenerateNewFoodLocation();
+    else  
       return;
-    }
   }
 }
 
@@ -74,8 +93,10 @@ void Game::Update() {
   int new_y = static_cast<int>(snake.head_y);
 
   // Check if there's food over here
-  if (food.x == new_x && food.y == new_y) {
+  // if (food.x == new_x && food.y == new_y) 
+  if (_food.GetFoodLocation().x == new_x && _food.GetFoodLocation().y == new_y){
     score++;
+    _food.FoodConsumed();
     PlaceFood();
     // Grow snake and increase speed.
     snake.GrowBody();

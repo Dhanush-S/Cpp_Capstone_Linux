@@ -2,7 +2,9 @@
 #define SNAKE_H
 
 #include <vector>
-#include "SDL.h"
+// #include "SDL.h"
+// #include "SDL2/SDL.h"
+#include "../src/include/SDL2/SDL.h"
 
 class Snake {
  public:
@@ -12,12 +14,14 @@ class Snake {
       : grid_width(grid_width),
         grid_height(grid_height),
         head_x(grid_width / 2),
-        head_y(grid_height / 2) {}
+        head_y(grid_height / 2), isSnakeActive(true){}
 
   void Update();
 
   void GrowBody();
   bool SnakeCell(int x, int y);
+
+  bool isSnakeActive;
 
   Direction direction = Direction::kUp;
 

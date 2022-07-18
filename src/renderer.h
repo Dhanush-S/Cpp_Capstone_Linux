@@ -2,8 +2,10 @@
 #define RENDERER_H
 
 #include <vector>
-#include "SDL.h"
+// #include "SDL.h"
+#include "SDL2/SDL.h"
 #include "snake.h"
+#include "food.h"
 
 class Renderer {
  public:
@@ -12,6 +14,7 @@ class Renderer {
   ~Renderer();
 
   void Render(Snake const snake, SDL_Point const &food);
+  void Render(Snake const snake, Food &food);
   void UpdateWindowTitle(int score, int fps);
 
  private:

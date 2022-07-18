@@ -1,6 +1,7 @@
 #include "controller.h"
 #include <iostream>
-#include "SDL.h"
+// #include "SDL.h"
+#include "SDL2/SDL.h"
 #include "snake.h"
 
 void Controller::ChangeDirection(Snake &snake, Snake::Direction input,
@@ -20,7 +21,7 @@ void Controller::HandleInput(bool &running, Snake &snake) const {
           ChangeDirection(snake, Snake::Direction::kUp,
                           Snake::Direction::kDown);
           break;
-
+          
         case SDLK_DOWN:
           ChangeDirection(snake, Snake::Direction::kDown,
                           Snake::Direction::kUp);
@@ -34,6 +35,10 @@ void Controller::HandleInput(bool &running, Snake &snake) const {
         case SDLK_RIGHT:
           ChangeDirection(snake, Snake::Direction::kRight,
                           Snake::Direction::kLeft);
+          break;
+
+        case SDLK_SPACE:
+          snake.isSnakeActive ? snake.isSnakeActive = false : snake.isSnakeActive = true;
           break;
       }
     }

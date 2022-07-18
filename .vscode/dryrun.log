@@ -1,0 +1,5 @@
+make.exe --dry-run --keep-going --print-directory
+make.exe: Entering directory `c:/Dhanush/Project/Nanodegree_Workspace/Projects/Capstone_Project/CppND-Capstone-Snake-Game'
+g++ -g -I src/include -I src -L src/lib -o build/Capstone src/main.cpp src/timer.cpp src/food.cpp src/game.cpp src/controller.cpp src/renderer.cpp src/snake.cpp -lmingw32 -lSDL2main -lSDL2
+make.exe: Leaving directory `c:/Dhanush/Project/Nanodegree_Workspace/Projects/Capstone_Project/CppND-Capstone-Snake-Game'
+ 
