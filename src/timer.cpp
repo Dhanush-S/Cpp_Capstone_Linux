@@ -21,11 +21,9 @@ void Timer::Start(int duration, Food *food)
 
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             localTime = localTime + 100;
-            std::cout << "Thread running.." << std::endl;
         }
         if(!_food->HasFoodExpired())
         {
-            std::cout << "----------------------Timer expired----------------------" << std::endl;
             _food->FoodTimerExpired();
         }
     });
@@ -39,17 +37,14 @@ void Timer::Stop()
         std::unique_lock<std::mutex> unqGuard(_mutex);
         this->_stopThread = true;
         unqGuard.unlock();
-
         Reset();
     }
 }
 
 void Timer::Reset()
 {
-    std::cout << "----------------------Thread stopped----------------------" << std::endl;
     if(this->_thread.joinable())
         this->_thread.join();
-        // this->_thread.detach();
 }
 
 bool Timer::IsTimerRunning()

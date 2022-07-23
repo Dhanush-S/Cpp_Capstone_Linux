@@ -5,6 +5,7 @@
 // #include "SDL.h"
 // #include "SDL2/SDL.h"
 #include "../src/include/SDL2/SDL.h"
+#include "food.h"
 
 class Snake {
  public:
@@ -31,14 +32,20 @@ class Snake {
   float head_x;
   float head_y;
   std::vector<SDL_Point> body;
+  void SetFoodTypeConsumed(FoodType foodType);
 
  private:
   void UpdateHead();
+  void UpdateHead(int deltaX, int deltaY);
   void UpdateBody(SDL_Point &current_cell, SDL_Point &prev_cell);
-
+  void WrapSnakeHead();
+  
   bool growing{false};
   int grid_width;
   int grid_height;
+  FoodType _foodTypeConsumed{FoodType::GOOD};
+  void GrowBody(int bodySize);
+  void ProcessFoodConsumed();
 };
 
 #endif

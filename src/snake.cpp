@@ -2,7 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-void Snake::Update() {
+void Snake::Update() 
+{
   SDL_Point prev_cell{
       static_cast<int>(head_x),
       static_cast<int>(
@@ -39,8 +40,9 @@ void Snake::UpdateHead() {
   }
 
   // Wrap the Snake around to the beginning if going off of the screen.
-  head_x = fmod(head_x + grid_width, grid_width);
-  head_y = fmod(head_y + grid_height, grid_height);
+  // head_x = fmod(head_x + grid_width, grid_width);
+  // head_y = fmod(head_y + grid_height, grid_height);
+  WrapSnakeHead();
 }
 
 void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell) {
@@ -50,9 +52,15 @@ void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell) 
   if (!growing) {
     // Remove the tail from the vector.
     body.erase(body.begin());
-  } else {
+  } 
+  else {
     growing = false;
-    size++;
+
+    ProcessFoodConsumed();
+    
+    // capture updated head cell
+    current_head_cell.x = static_cast<int>(head_x);
+    current_head_cell.y = static_cast<int>(head_y);
   }
 
   // Check if the snake has died.
@@ -76,4 +84,102 @@ bool Snake::SnakeCell(int x, int y) {
     }
   }
   return false;
+}
+
+void Snake::SetFoodTypeConsumed(FoodType foodType)
+{
+  _foodTypeConsumed = foodType;
+}
+
+void Snake::ProcessFoodConsumed()
+{
+  switch(_foodTypeConsumed)
+  {
+    case FoodType::GOOD:
+          size++;
+          speed += 0.02;
+          break;
+    case FoodType::BAD:
+          if(size > 0) size--;
+          body.erase(body.begin());
+          break;
+    case FoodType::POWER:
+          size+=2;
+          GrowBody(1);
+          speed += 0.04;
+          break;
+    case FoodType::SLOW:
+          size++;
+          speed += 0.01;
+          break;
+    default: break;
+  }
+}
+
+void Snake::GrowBody(int bodySize)
+{
+  for(int i=0; i<bodySize; i++)
+  {
+    if(body.size() == 1)
+    {
+      SDL_Point point;
+      switch (direction)
+      {
+      case Direction::kDown :
+        point.x = body.at(0).x;
+        point.y = body.at(0).y + 1;
+        UpdateHead(0,1);
+        break;
+      case Direction::kUp :
+        point.x = body.at(0).x;
+        point.y = body.at(0).y - 1;
+        UpdateHead(0,-1);
+        break;
+      case Direction::kLeft :
+        point.x = body.at(0).x - 1;
+        point.y = body.at(0).y;
+        UpdateHead(-1,0);
+        break;
+      case Direction::kRight :
+        point.x = body.at(0).x + 1;
+        point.y = body.at(0).y;
+        UpdateHead(1,0);
+        break;
+      default:
+        break;
+      }
+      body.insert(body.begin(),point);
+    }
+    else
+    {
+      SDL_Point point;
+      if( body.at(0).x == body.at(1).x)
+      {
+        // grow body in y-direction   
+        point.x = body.at(0).x;
+        body.at(0).y > body.at(1).y ? point.y = body.at(0).y+1 :  point.y = body.at(0).y-1;
+       }
+      else
+      {
+        // grow body in x-direction
+        point.y = body.at(0).y;
+        body.at(0).x > body.at(1).x ? point.x = body.at(0).x+1 :  point.x = body.at(0).x-1;
+      }
+      body.insert(body.begin(),point);
+    }
+  }
+}
+
+void Snake::UpdateHead(int deltaX, int deltaY)
+{
+  head_x += deltaX;
+  head_y += deltaY;
+
+  WrapSnakeHead();
+}
+
+void Snake::WrapSnakeHead()
+{
+  head_x = fmod(head_x + grid_width, grid_width);
+  head_y = fmod(head_y + grid_height, grid_height);
 }
