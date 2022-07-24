@@ -1,4 +1,4 @@
-#include "Timer.h"
+#include "timer.h"
 #include "food.h"
 
 bool Timer::_stopThread = false;

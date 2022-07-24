@@ -2,12 +2,12 @@
 #define GAME_H
 
 #include <random>
-// #include "SDL.h"
+#include "SDL.h"
 #include "food.h"
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
-#include "SDL2/SDL.h"
+
 
 
 class Game {

@@ -2,10 +2,10 @@
 #define SNAKE_H
 
 #include <vector>
-// #include "SDL.h"
-// #include "SDL2/SDL.h"
-#include "../src/include/SDL2/SDL.h"
+#include "SDL.h"
 #include "food.h"
+
+
 
 class Snake {
  public:

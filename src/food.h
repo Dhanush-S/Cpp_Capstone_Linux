@@ -1,7 +1,7 @@
 #ifndef FOOD_H
 #define FOOD_H
 
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #include <random>
 #include <future>
 #include <mutex>

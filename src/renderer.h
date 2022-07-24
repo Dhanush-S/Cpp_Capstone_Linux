@@ -2,10 +2,10 @@
 #define RENDERER_H
 
 #include <vector>
-// #include "SDL.h"
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #include "snake.h"
 #include "food.h"
+
 
 class Renderer {
  public:
