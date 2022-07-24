@@ -15,7 +15,8 @@ class Game {
   Game(std::size_t grid_width, std::size_t grid_height, int game_mode);
   void Run(Controller const &controller, Renderer &renderer,
            std::size_t target_frame_duration);
-  int GetScore() const;
+  int GetPlayer1Score() const;
+  int GetPlayer2Score() const;
   int GetSize() const;
 
  private:
@@ -29,10 +30,15 @@ class Game {
   std::uniform_int_distribution<int> random_w;
   std::uniform_int_distribution<int> random_h;
 
-  int score{0};
+  int score1{0};
+  int score2{0};
   int _gameMode;
   void PlaceFood();
   void Update();
+  void UpdateSnakes();
+  bool CheckIfFoodExpired();
+  bool CheckIfSnakesAlive();
+  void CheckIfSnakesConsumedFood();
 };
 
 #endif

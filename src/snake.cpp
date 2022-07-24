@@ -100,7 +100,6 @@ void Snake::ProcessFoodConsumed()
           speed += 0.02;
           break;
     case FoodType::BAD:
-          if(size > 0) size--;
           body.erase(body.begin());
           break;
     case FoodType::POWER:
