@@ -13,8 +13,7 @@ void Snake::Update()
       static_cast<int>(head_x),
       static_cast<int>(head_y)};  // Capture the head's cell after updating.
 
-  // Update all of the body vector items if the snake head has moved to a new
-  // cell.
+  // Update all of the body vector items if the snake head has moved to a new cell
   if (current_cell.x != prev_cell.x || current_cell.y != prev_cell.y) {
     UpdateBody(current_cell, prev_cell);
   }
@@ -40,8 +39,6 @@ void Snake::UpdateHead() {
   }
 
   // Wrap the Snake around to the beginning if going off of the screen.
-  // head_x = fmod(head_x + grid_width, grid_width);
-  // head_y = fmod(head_y + grid_height, grid_height);
   WrapSnakeHead();
 }
 

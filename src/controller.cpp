@@ -4,12 +4,14 @@
 #include "SDL2/SDL.h"
 #include "snake.h"
 
+// update direction input of the snake
 void Controller::ChangeDirection(Snake *snake, Snake::Direction input,
                                  Snake::Direction opposite) const {
   if (snake->direction != opposite || snake->size == 1) snake->direction = input;
   return;
 }
 
+// handle inputs from 2 players
 void Controller::HandleInput(bool &running, Snake *snake1, Snake *snake2) const {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {

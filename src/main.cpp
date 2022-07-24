@@ -3,6 +3,7 @@
 #include "game.h"
 #include "renderer.h"
 
+// determine game play type - single or two player mode
 int GameModeSelection()
 {
   int choice = 0;
@@ -21,6 +22,7 @@ int GameModeSelection()
   }
 }
 
+// print scores at the end of the game
 void PrintScore(int score1, int score2, int gameMode)
 {
   if(gameMode == 1)
@@ -39,6 +41,7 @@ void PrintScore(int score1, int score2, int gameMode)
   }
 }
 
+// print game mode options and instructions
 void PrintGameInstructions(int gameMode)
 {
   std::cout << "-----------------------------Player 1 Controls-----------------------------" << std::endl;
@@ -72,6 +75,7 @@ void PrintGameInstructions(int gameMode)
   std::cout << "Game has begun, enjoy!!" << std::endl;
 }
 
+// entry point
 int main(int argc, char* argv[]) {
 
   int choice = GameModeSelection() ;
@@ -83,7 +87,7 @@ int main(int argc, char* argv[]) {
   constexpr std::size_t kScreenHeight{640};
   constexpr std::size_t kGridWidth{32};
   constexpr std::size_t kGridHeight{32};
-
+  
   Renderer renderer(kScreenWidth, kScreenHeight, kGridWidth, kGridHeight);
   Controller controller;
   Game game(kGridWidth, kGridHeight, choice);

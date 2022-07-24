@@ -5,15 +5,17 @@
 
 Game::Game(std::size_t grid_width, std::size_t grid_height, int game_mode)
     : _gameMode(game_mode),
-      engine(dev()),
-      _food(grid_width,grid_height),
-      random_w(0, static_cast<int>(grid_width - 1)),
-      random_h(0, static_cast<int>(grid_height - 1)) {
+      _food(grid_width,grid_height)
+{ 
 
-  snake1 = std::make_unique<Snake>(grid_width, grid_height, (grid_width-1)/2, (grid_height-1)/2);       
+  // allocate memory for snake1
+  _snake1 = std::make_unique<Snake>(grid_width, grid_height, (grid_width-1)/2, (grid_height-1)/2); 
+
+  // allocate memory to snake2 only if game_mode is 2 player      
   if(game_mode == 2)
-    snake2 = std::make_unique<Snake>(grid_width, grid_height, (grid_width+1)/2, (grid_height+1)/2);
+    _snake2 = std::make_unique<Snake>(grid_width, grid_height, (grid_width+1)/2, (grid_height+1)/2);
 
+  // place a food in the grid
   PlaceFood();
 }
 
@@ -32,19 +34,24 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     if(_gameMode == 1)
     {
       // Input, Update, Render - the main game loop.
-      controller.HandleInput(running, snake1.get(), nullptr);
-      // update
-      if(snake1->isSnakeActive)
+      controller.HandleInput(running, _snake1.get(), nullptr);
+      
+      // update only if the game is not paused
+      if(_snake1->isSnakeActive)
         Update();
+      
       // render
-      renderer.Render(snake1.get(), nullptr, _food);
+      renderer.Render(_snake1.get(), nullptr, _food);
     }
     else
     {
-      controller.HandleInput(running, snake1.get(), snake2.get());
-      if(snake1->isSnakeActive || snake2->isSnakeActive)
+      controller.HandleInput(running, _snake1.get(), _snake2.get());
+      
+      // update only if the game is not paused
+      if(_snake1->isSnakeActive || _snake2->isSnakeActive)
         Update();
-      renderer.Render(snake1.get(), snake2.get(), _food);
+      
+      renderer.Render(_snake1.get(), _snake2.get(), _food);
     }
 
     // start the timer on the food once it is rendered to the user
@@ -60,16 +67,18 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // After every second, update the window title.
     if (frame_end - title_timestamp >= 1000) {
       if(_gameMode == 1)
-        renderer.UpdateWindowTitle(score1, frame_count);
+        renderer.UpdateWindowTitle(_score1, frame_count);
       else
-        renderer.UpdateWindowTitle(score1,score2,frame_count);
+        renderer.UpdateWindowTitle(_score1,_score2,frame_count);
       frame_count = 0;
       title_timestamp = frame_end;
     }
 
-    // If the time for this frame is too small (i.e. frame_duration is
-    // smaller than the target ms_per_frame), delay the loop to
-    // achieve the correct frame rate.
+    /* 
+    *  If the time for this frame is too small (i.e. frame_duration is
+    *  smaller than the target ms_per_frame), delay the loop to
+    *  achieve the correct frame rate.
+    */ 
     if (frame_duration < target_frame_duration) {
       SDL_Delay(target_frame_duration - frame_duration);
     }
@@ -85,18 +94,17 @@ void Game::PlaceFood()
     x = _food.GetFoodLocation().x;
     y = _food.GetFoodLocation().y;
 
-    // Check that the location is not occupied by a snake item before placing
-    // food.
+    // Check that the location is not occupied by a snake item before placing food
     if(_gameMode == 1)
     {
-      if(snake1->SnakeCell(x,y))
+      if(_snake1->SnakeCell(x,y))
       _food.GenerateNewFoodLocation();
       else  
         return;
     }
     else
     {
-      if(snake1->SnakeCell(x,y) || snake2->SnakeCell(x,y))
+      if(_snake1->SnakeCell(x,y) || _snake2->SnakeCell(x,y))
         _food.GenerateNewFoodLocation();
       else  
         return;
@@ -117,19 +125,20 @@ void Game::Update() {
   CheckIfSnakesConsumedFood();
 }
 
-int Game::GetPlayer1Score() const { return score1; }
-int Game::GetPlayer2Score() const { return score2; }
-int Game::GetSize() const { return snake1->size; }
+int Game::GetPlayer1Score() const { return _score1; }
+int Game::GetPlayer2Score() const { return _score2; }
 
 void Game::UpdateSnakes()
 {
-  if(snake1->alive)
-    snake1->Update();
+  // update snake if it is alive
+  if(_snake1->alive)
+    _snake1->Update();
 
   if(_gameMode == 2)
   {
-    if(snake2->alive)
-      snake2->Update();
+    // update snake if it is alive
+    if(_snake2->alive)
+      _snake2->Update();
   }
     
 }
@@ -138,7 +147,8 @@ bool Game::CheckIfFoodExpired()
 {
   if(_gameMode == 1)
   {
-    if(_food.HasFoodExpired() && snake1->isSnakeActive)
+    // place a new food if food timer has expired and game is not paused
+    if(_food.HasFoodExpired() && _snake1->isSnakeActive)
     {
       PlaceFood();
       return true;
@@ -146,7 +156,8 @@ bool Game::CheckIfFoodExpired()
   }
   else
   {
-    if(_food.HasFoodExpired() && (snake1->isSnakeActive || snake2->isSnakeActive))
+    // place a new food if food timer has expired and game is not paused
+    if(_food.HasFoodExpired() && (_snake1->isSnakeActive || _snake2->isSnakeActive))
     {
       PlaceFood();
       return true;
@@ -158,41 +169,44 @@ bool Game::CheckIfFoodExpired()
 bool Game::CheckIfSnakesAlive()
 {
   if(_gameMode == 1)
-    return snake1->alive;
-  return (snake1->alive || snake2->alive);
+    return _snake1->alive;
+  return (_snake1->alive || _snake2->alive);
 }
 
 void Game::CheckIfSnakesConsumedFood()
 {
   // check if Snake1 has consumed food
-  int snake_x = static_cast<int>(snake1->head_x);
-  int snake_y = static_cast<int>(snake1->head_y);
+  int snake_x = static_cast<int>(_snake1->head_x);
+  int snake_y = static_cast<int>(_snake1->head_y);
 
-  // Check if there's food over here
+  /* 
+  * Check if there's food over here
+  * if consumed, place a new food, inform snake about food type and update snake's score 
+  */
   if (_food.GetFoodLocation().x == snake_x && _food.GetFoodLocation().y == snake_y)
   {
-    snake1->SetFoodTypeConsumed(_food.GetFoodType());
+    _snake1->SetFoodTypeConsumed(_food.GetFoodType());
     _food.FoodConsumed();
     PlaceFood();   
-    snake1->GrowBody();
+    _snake1->GrowBody();
   }
-  score1 = snake1->size;
+  _score1 = _snake1->size;
 
   if(_gameMode == 2)
   {
-        // check if Snake1 has consumed food
-    snake_x = static_cast<int>(snake2->head_x);
-    snake_y = static_cast<int>(snake2->head_y);
+    // check if Snake2 has consumed food
+    snake_x = static_cast<int>(_snake2->head_x);
+    snake_y = static_cast<int>(_snake2->head_y);
 
     // Check if there's food over here
     if (_food.GetFoodLocation().x == snake_x && _food.GetFoodLocation().y == snake_y)
     {
-      snake2->SetFoodTypeConsumed(_food.GetFoodType());
+      _snake2->SetFoodTypeConsumed(_food.GetFoodType());
       _food.FoodConsumed();
       PlaceFood();   
-      snake2->GrowBody();
+      _snake2->GrowBody();
     }
-    score2 = snake2->size;
+    _score2 = _snake2->size;
   }
   else
     return;

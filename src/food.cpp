@@ -27,7 +27,6 @@ void Food::GenerateNewFood()
     _foodDuration = random_duration(engine);
     _foodLocation.x = random_w(engine);
     _foodLocation.y = random_h(engine);
-    
 }
 
 void Food::GenerateNewFoodLocation()
@@ -58,10 +57,6 @@ void Food::FoodPlaced()
     if(!_timer.IsTimerRunning())
     {
         _timer.Start(_foodDuration, this);
-                       
-        // std::lock_guard<std::mutex> lckGuard(_mutex);
-        // _durationExpired = true;
-        // std::cout << "Food duration has expired..." << std::endl;
     }
 }
 
@@ -71,12 +66,7 @@ void Food::FoodConsumed()
     _durationExpired = false;
     unqGuard.unlock();
 
-    _timer.Stop();
-    // if(_timer.IsTimerRunning())
-    // {
-    //     _timer.Stop();
-    // }
-        
+    _timer.Stop();    
 }
 
 void Food::FoodTimerExpired()
